@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(cppev 0.1.0)
+
+include("${CMAKE_CURRENT_LIST_DIR}/embedagentTargets.cmake")
+
+set(EMBEDAGENT_VERSION @PROJECT_VERSION@)
