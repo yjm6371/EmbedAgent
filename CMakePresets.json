@@ -1,0 +1,66 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CPPEV_SOURCE_DIR": "${sourceDir}/../cppev",
+        "EA_BUILD_TESTS": "OFF"
+      }
+    },
+    {
+      "name": "cross-base",
+      "hidden": true,
+      "inherits": "base",
+      "cacheVariables": {
+        "EA_BUILD_EXAMPLES": "OFF",
+        "EA_ENABLE_SANITIZERS": "OFF"
+      }
+    },
+    {
+      "name": "host-debug",
+      "displayName": "Host — Debug (ASan + UBSan)",
+      "description": "Host machine debug build with AddressSanitizer and UBSan enabled",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EA_BUILD_TESTS": "ON",
+        "EA_ENABLE_SANITIZERS": "ON"
+      }
+    },
+    {
+      "name": "host-release",
+      "displayName": "Host — Release",
+      "description": "Host machine optimized release build",
+      "inherits": "base",
+      "cacheVariables": {
+        "EA_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "arm32",
+      "displayName": "ARM 32-bit cross build",
+      "description": "Cross-compile for arm-linux-gnueabihf",
+      "inherits": "cross-base",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/arm-linux-gnueabihf.cmake"
+    },
+    {
+      "name": "aarch64",
+      "displayName": "AArch64 cross build",
+      "description": "Cross-compile for aarch64-linux-gnu",
+      "inherits": "cross-base",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/aarch64-linux-gnu.cmake"
+    }
+  ],
+  "buildPresets": [
+    { "name": "host-debug",   "configurePreset": "host-debug" },
+    { "name": "host-release", "configurePreset": "host-release" },
+    { "name": "arm32",        "configurePreset": "arm32" },
+    { "name": "aarch64",      "configurePreset": "aarch64" }
+  ]
+}
