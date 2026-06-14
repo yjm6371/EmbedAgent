@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout embedagent
+        uses: actions/checkout@v4
+
+      - name: Checkout cppev
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_ORG/cppev
+          path: cppev
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libgtest-dev
+
+      - name: Configure
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCPPEV_SOURCE_DIR=${{ github.workspace }}/cppev \
+            -DCPPEV_ENABLE_SANITIZERS=OFF \
+            -DEA_BUILD_TESTS=ON \
+            -DEA_ENABLE_SANITIZERS=OFF
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
